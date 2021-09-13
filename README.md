@@ -39,7 +39,7 @@ maven("https://maven.pkg.github.com/JustEverythingTweaked/JET") {
 
 ##### Dependency
 ```kotlin
-implementation("de.jet:jet:<version>")
+implementation("de.jet:jet-<module>:<version>")
 ```
 
 ## Version
