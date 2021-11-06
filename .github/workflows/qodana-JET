@@ -1,4 +1,2 @@
 - name: Qodana - Linters
   uses: JetBrains/qodana-action@v3.2.1
-  on:
-    workflow_dispatch
