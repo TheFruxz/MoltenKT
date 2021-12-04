@@ -1,4 +1,3 @@
 before_install:
   - jdk install java 17.0.1-tem
-jdk:
-  - 17.0.1-tem
+  - jsk use java 17.0.1-tem
