@@ -2,7 +2,7 @@ package de.jet.jvm.tool.container
 
 class Container<T> {
 
-	private val content: T? = null
+	private var content: T? = null
 
 	fun getContent(): T = content!!
 
