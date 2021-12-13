@@ -4,8 +4,8 @@ import de.jet.jvm.interchange.InterchangeStructure
 
 class JavaCordInterchange(
 	override val name: String,
-	override val path: String,
-	override val branches: List<JavaCordInterchangeBranch>
+	override val path: String = "/",
+	override val branches: List<JavaCordInterchangeBranch> = emptyList()
 ) : InterchangeStructure<JavaCordInterchangeBranch>(name, path, branches)
 
 
