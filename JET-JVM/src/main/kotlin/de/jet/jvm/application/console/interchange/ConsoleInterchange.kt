@@ -42,7 +42,7 @@ class ConsoleInterchange(
         }
 
         fun branch(name: String, process: ConsoleStructureBranch.Builder.() -> Unit = { }) = apply {
-            branches.add(ConsoleStructureBranch.Builder(name, "$path/$name", branches, content).apply(process).produce())
+            branches.add(ConsoleStructureBranch.Builder(name, "$path/$name", mutableListOf(), content).apply(process).produce())
         }
 
         fun content(content: ((parameters: List<String>) -> Unit)?) = apply {

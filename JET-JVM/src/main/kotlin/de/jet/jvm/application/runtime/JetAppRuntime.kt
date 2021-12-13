@@ -23,13 +23,15 @@ class JetAppRuntime(override val identity: String, override val version: Version
 		JetAppConfigController.apply {
 			module = JetAppConfigModule.autoGenerateFromApp(this@JetAppRuntime)
 			addApp(module)
-			(getApp(this@JetAppRuntime)!!.appFileFolderPath + "info.jetRun").pathAsFileFromRuntime().apply {
-				if (!exists()) {
-					toPath().parent.toFile().mkdirs()
-					createNewFile()
-					writeText("installed='${Calendar.now().javaDate}'")
+			(getApp(this@JetAppRuntime)!!
+				.appFileFolderPath + "info.jetRun")
+				.pathAsFileFromRuntime().apply {
+					if (!exists()) {
+						toPath().parent.toFile().mkdirs()
+						createNewFile()
+						writeText("installed='${Calendar.now().javaDate}'")
+					}
 				}
-			}
 		}
 	}
 

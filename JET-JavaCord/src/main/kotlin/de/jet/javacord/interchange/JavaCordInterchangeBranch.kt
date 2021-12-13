@@ -3,9 +3,10 @@ package de.jet.javacord.interchange
 import de.jet.jvm.interchange.InterchangeStructureBranch
 import org.javacord.api.interaction.SlashCommandOptionType
 
-class JavaCordInterchangeBranch(
+open class JavaCordInterchangeBranch(
 	override val branchName: String,
-	val branchType: SlashCommandOptionType = SlashCommandOptionType.STRING,
+	open val branchType: SlashCommandOptionType,
 	override val path: String = "/",
-	override val branches: List<InterchangeStructureBranch> = emptyList(),
+	override val branches: List<JavaCordInterchangeBranch> = emptyList(),
+	open val content: ((parameters: List<String>) -> Unit)? = null
 ) : InterchangeStructureBranch(branchName, path, branches)

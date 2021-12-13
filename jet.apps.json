@@ -1,0 +1,11 @@
+{
+    "jetVersion": {
+        "versionNumber": 1.0
+    },
+    "apps": [
+        {
+            "identity": "test",
+            "appFileFolderPath": "APP_test/"
+        }
+    ]
+}
