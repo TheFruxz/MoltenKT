@@ -20,11 +20,8 @@ class EventAttachComponent : SmartComponent(ENABLED, true) {
 	}
 
 	fun attachListener(eventListener: EventListener) {
-		listeners.add(eventListener)
 
-		if (isRunning) {
-			vendor.add(eventListener)
-		}
+		listeners.add(eventListener)
 
 		JetCache.registeredListeners.add(eventListener)
 		debugLog("Listener '${eventListener.identity}' added through '$identity' with the attachListener function!")

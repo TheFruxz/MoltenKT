@@ -32,7 +32,6 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.configuration.serialization.ConfigurationSerializable
 import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.event.HandlerList
-import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.InputStreamReader
 import java.util.logging.Level
@@ -225,7 +224,8 @@ abstract class App : JavaPlugin(), Identifiable<App> {
 
 				eventListener.replaceVendor(this)
 
-				pluginManager.registerEvents(eventListener as Listener, this)
+				pluginManager.registerEvents(eventListener, this)
+
 				JetCache.registeredListeners.add(eventListener)
 				mainLog(Level.INFO, "registered '${eventListener.listenerIdentity}' listener!")
 
