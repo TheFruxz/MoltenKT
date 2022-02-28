@@ -8,6 +8,7 @@ import de.jet.jvm.tool.smart.identification.Identity
 import de.jet.paper.app.component.buildMode.BuildModeComponent
 import de.jet.paper.app.component.chat.ChatComponent
 import de.jet.paper.app.component.component.ComponentComponent
+import de.jet.paper.app.component.eventAttach.EventAttachComponent
 import de.jet.paper.app.component.events.EventsComponent
 import de.jet.paper.app.component.experimental.ExperimentalComponent
 import de.jet.paper.app.component.itemLink.ItemLinkComponent
@@ -32,6 +33,7 @@ import de.jet.paper.extension.display.ui.item
 import de.jet.paper.extension.mainLog
 import de.jet.paper.extension.objectBound.buildAndRegisterSandBox
 import de.jet.paper.extension.objectBound.buildSandBox
+import de.jet.paper.extension.paper.event.attachEvent
 import de.jet.paper.extension.paper.worlds
 import de.jet.paper.extension.tasky.sync
 import de.jet.paper.general.api.mojang.MojangProfile
@@ -63,6 +65,7 @@ import kotlinx.serialization.modules.subclass
 import org.bukkit.Material
 import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.entity.Player
+import org.bukkit.event.entity.EntityDamageEvent
 import java.util.logging.Level
 
 class JetApp : App() {
@@ -165,6 +168,7 @@ class JetApp : App() {
 		add(MarkingComponent())
 		add(ItemLinkComponent())
 		add(ComponentComponent())
+		add(EventAttachComponent())
 
 		add(JETInterchange())
 
@@ -234,6 +238,18 @@ class JetApp : App() {
 			JetData.autoStartComponents.content = JetData.autoStartComponents.content.toMutableSet().apply {
 				add(buildRandomTag().also { println("adding $it") })
 			}.also { println("set to $it") }
+
+		}
+
+		buildAndRegisterSandBox(this, "testPlayerSpecificListener") {
+
+			executor as Player
+
+			executor.attachEvent<EntityDamageEvent> {
+
+				entity.sendMessage(cause.name)
+
+			}
 
 		}
 

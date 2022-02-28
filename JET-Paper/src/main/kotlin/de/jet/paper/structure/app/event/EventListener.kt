@@ -29,7 +29,7 @@ abstract class EventListener(
 	lateinit var vendor: App
 		internal set
 
-	val listenerIdentity: String
+	open val listenerIdentity: String
 		get() = tryOrNull { this::class.simpleName } ?: "${UUID.randomUUID()}"
 
 	override val vendorIdentity: Identity<App>

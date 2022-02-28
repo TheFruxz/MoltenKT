@@ -25,6 +25,7 @@ import de.jet.paper.tool.position.LocationBox
 import de.jet.paper.tool.timing.cooldown.Cooldown
 import de.jet.paper.tool.timing.tasky.Tasky
 import org.bukkit.OfflinePlayer
+import org.bukkit.entity.Entity
 import org.bukkit.entity.HumanEntity
 import kotlin.reflect.full.findAnnotations
 
@@ -130,6 +131,14 @@ object JetCache : AppCache {
 	@GlobalData
 	@DataLevel(KILL)
 	internal val initializationProcesses = mutableListOf<() -> Unit>()
+
+	@EntityData
+	@DataLevel(CLEAR)
+	val playerBoundListener = mutableMapOf<Identity<out OfflinePlayer>, MutableList<EventListener>>()
+
+	@EntityData
+	@DataLevel(CLEAR)
+	val entityBoundListener = mutableMapOf<Identity<out Entity>, MutableList<EventListener>>()
 
 	private fun entityCleanerObjects(entity: UUID) = mapOf(
 		this::runningKeyboards to { runningKeyboards.removeAll { key, _ -> key.player == entity } },
