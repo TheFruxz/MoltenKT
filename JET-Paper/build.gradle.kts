@@ -17,6 +17,10 @@ repositories {
 
     maven("https://papermc.io/repo/repository/maven-public/") // PaperMC
     maven("https://mvn.intellectualsites.com/content/repositories/thirdparty/")
+    maven {
+        url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
+        name = "Ktor EAP"
+    }
 
 }
 
@@ -36,6 +40,13 @@ dependencies {
     shadow("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
     shadow("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+
+    // KTOR
+    implementation("io.ktor:ktor-client-core:2.0.0-beta-1")
+    implementation("io.ktor:ktor-client-cio:2.0.0-beta-1")
+    implementation("io.ktor:ktor-client-content-negotiation:2.0.0-beta-1")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.0-beta-1")
+    implementation("io.ktor:ktor-serialization-kotlinx-xml:2.0.0-beta-1")
 
     // External
 

@@ -5,6 +5,7 @@ package de.jet.paper.structure.app
 import com.destroystokyo.paper.utils.PaperPluginLogger
 import de.jet.jvm.extension.catchException
 import de.jet.jvm.extension.container.mutableReplaceWith
+import de.jet.jvm.extension.data.jsonBase
 import de.jet.jvm.extension.tryToCatch
 import de.jet.jvm.tool.smart.identification.Identifiable
 import de.jet.jvm.tool.smart.identification.Identity
@@ -23,6 +24,9 @@ import de.jet.paper.structure.app.interchange.IssuedInterchange
 import de.jet.paper.structure.command.Interchange
 import de.jet.paper.structure.component.Component
 import de.jet.paper.structure.service.Service
+import io.ktor.client.*
+import io.ktor.client.plugins.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -466,6 +470,12 @@ abstract class App : JavaPlugin(), Identifiable<App> {
 	var appRegistrationFile = YamlConfiguration()
 
 	var coroutineScope = CoroutineScope(SupervisorJob())
+
+	val httpClient = HttpClient {
+		install(ContentNegotiation) {
+			json(jsonBase)
+		}
+	}
 
 	val log by lazy { createLog(appIdentity) }
 
