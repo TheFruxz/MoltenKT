@@ -54,11 +54,16 @@ import de.jet.paper.tool.input.Keyboard
 import de.jet.paper.tool.input.Keyboard.RenderEngine.Key
 import de.jet.paper.tool.input.Keyboard.RenderEngine.KeyConfiguration
 import de.jet.paper.tool.permission.Approval
+import io.ktor.client.call.*
+import io.ktor.client.request.*
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 import org.bukkit.Material
@@ -116,13 +121,26 @@ class JetApp : App() {
 
 		// TODO: 19.10.2021 load language files to the lang-folder
 
-		debugLog("DebugMode preference loaded & set from file!")
+
 
 	}
 
 	override suspend fun hello() {
 
+		debugLog("Setting debug mode up...")
 		debugMode = JetData.debugMode.content
+		debugLog("Successfully configured debug mode!")
+
+		mainLog(Level.INFO, "Checking for updates...")
+		httpClient.get(urlString = "https://api.github.com/repos/TheFruxz/JET/releases/latest")
+			.body<JsonObject>()["tag_name"].let {
+				val currentVersion = it?.jsonPrimitive?.toString()
+				if (currentVersion == description.version) {
+					mainLog(Level.WARNING, "You're running the latest version! ($currentVersion)")
+				} else {
+					mainLog(Level.INFO, "You're currently running JET ${description.version}, but the latest version is $currentVersion!")
+				}
+		}
 
 		mainLog(
 			Level.INFO, """
