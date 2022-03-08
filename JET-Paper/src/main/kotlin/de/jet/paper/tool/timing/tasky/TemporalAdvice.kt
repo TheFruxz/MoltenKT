@@ -44,6 +44,9 @@ interface TemporalAdvice {
 		fun ticking(delay: Duration, distance: Duration, async: Boolean = false) =
 			ticking(delay.inWholeMinecraftTicks, distance.inWholeMinecraftTicks, async)
 
+		fun ticking(delayAndDistance: Duration, async: Boolean = false) =
+			ticking(delayAndDistance, delayAndDistance, async)
+
 	}
 
 }

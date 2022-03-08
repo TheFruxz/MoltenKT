@@ -134,7 +134,9 @@ tasks {
     }
 
     processResources {
-        expand("version" to project.version, "name" to project.name, "website" to "https://$host")
+        filesMatching("plugin.yml") {
+            expand("version" to project.version, "name" to project.name, "website" to "https://$host")
+        }
     }
 
 }

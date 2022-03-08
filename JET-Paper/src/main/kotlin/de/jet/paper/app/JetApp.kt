@@ -280,36 +280,7 @@ class JetApp : App() {
 
 	override fun bye() {
 
-		val disabledAppExecutor = CommandExecutor { sender, _, _, _ ->
-			sender.sendMessage("§cThis vendor app of this command is currenty disabled!")
-			true
-		}
 
-		JetCache.registeredServices.forEach {
-			if (it.vendor.identity == this.identity) {
-				it.shutdown()
-			}
-		}
-
-		JetCache.registeredComponents.forEach {
-			if (it.vendor.identity == this.identity) {
-				tryToIgnore { runBlocking { it.stop() } }
-			}
-		}
-
-		description.commands.keys.forEach {
-			getCommand(it)?.apply {
-				setExecutor(disabledAppExecutor)
-				tabCompleter = null
-			}
-
-			mainLog(Level.INFO, "Command '$it' disabled")
-		}
-
-		coroutineScope.apply {
-			coroutineContext.cancelChildren()
-			cancel("JET is shutting down!")
-		}
 
 	}
 	
@@ -317,7 +288,7 @@ class JetApp : App() {
 
 		override val predictedIdentity = Identity<JetApp>("JET")
 
-		var debugMode: Boolean = false
+		var debugMode: Boolean = true
 
 	}
 

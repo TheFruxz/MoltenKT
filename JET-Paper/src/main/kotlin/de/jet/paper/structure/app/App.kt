@@ -3,10 +3,10 @@
 package de.jet.paper.structure.app
 
 import com.destroystokyo.paper.utils.PaperPluginLogger
-import de.jet.jvm.extension.catchException
+import de.jet.jvm.extension.*
 import de.jet.jvm.extension.container.mutableReplaceWith
+import de.jet.jvm.extension.data.fromJson
 import de.jet.jvm.extension.data.jsonBase
-import de.jet.jvm.extension.tryToCatch
 import de.jet.jvm.tool.smart.identification.Identifiable
 import de.jet.jvm.tool.smart.identification.Identity
 import de.jet.jvm.tool.timing.calendar.Calendar
@@ -21,17 +21,15 @@ import de.jet.paper.runtime.app.RunStatus.*
 import de.jet.paper.runtime.exception.IllegalActionException
 import de.jet.paper.structure.app.event.EventListener
 import de.jet.paper.structure.app.interchange.IssuedInterchange
+import de.jet.paper.structure.app.update.AppConfigurationFile
 import de.jet.paper.structure.command.Interchange
 import de.jet.paper.structure.component.Component
 import de.jet.paper.structure.service.Service
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import org.bukkit.command.CommandExecutor
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.configuration.serialization.ConfigurationSerializable
 import org.bukkit.configuration.serialization.ConfigurationSerialization
@@ -477,6 +475,9 @@ abstract class App : JavaPlugin(), Identifiable<App> {
 		}
 	}
 
+	var appConfigurationFile: AppConfigurationFile? = null
+		private set
+
 	val log by lazy { createLog(appIdentity) }
 
 	internal fun getResourceFile(path: String) =
@@ -537,6 +538,17 @@ abstract class App : JavaPlugin(), Identifiable<App> {
 		tryToCatch {
 			JetCache.registeredApplications.add(this)
 
+			tryOrNull { appConfigurationFile = getResourceText("jet-app.json").fromJson() } ?:
+				println("The jet-app.json of the app '${companion.predictedIdentity}' is not valid, or not found in resources!")
+
+			appConfigurationFile?.fileFormatRegex?.let {
+				if (file.name.matches(it)) {
+					debugLog("The file-format of the app-configuration-file '${file.name}' is valid! ${it.pattern}")
+				} else {
+					throw IllegalStateException("The file '${file.name}' is not a valid '${it.pattern}' file!")
+				}
+			}
+
 			coroutineScope.launch {
 
 				runStatus = PRE_LOAD
@@ -571,8 +583,46 @@ abstract class App : JavaPlugin(), Identifiable<App> {
 		tryToCatch {
 
 			runStatus = SHUTDOWN
+
 			bye()
-			coroutineScope.cancel("App '$identity' is now disabled!")
+
+			val disabledAppExecutor = CommandExecutor { sender, _, _, _ ->
+				sender.sendMessage("§cThe vendor app ($identity) of this command is currently disabled!")
+				true
+			}
+
+			JetCache.registeredServices.forEach {
+				if (it.vendor.identity == identity) {
+					it.shutdown()
+				}
+			}
+
+			JetCache.registeredComponents.forEach {
+				if (it.vendor.identity == identity) {
+					tryToIgnore { runBlocking { it.stop() } }
+				}
+			}
+
+			description.commands.keys.forEach {
+				getCommand(it)?.apply {
+					if (this.plugin == this@App) {
+						setExecutor(disabledAppExecutor)
+						tabCompleter = null
+					}
+				}
+
+				mainLog(Level.INFO, "Command '$it' disabled")
+			}
+
+			coroutineScope.apply {
+				coroutineContext.cancelChildren()
+				cancel("The app '${tryOrNull { identity }}' is shutting down")
+			}
+
+			httpClient.coroutineContext.apply {
+				cancelChildren()
+				coroutineScope.cancel("The app '${tryOrNull { identity }}' is shutting down")
+			}
 
 			runStatus = OFFLINE
 

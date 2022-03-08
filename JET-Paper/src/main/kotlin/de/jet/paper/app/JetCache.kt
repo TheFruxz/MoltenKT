@@ -4,6 +4,7 @@ import de.jet.jvm.extension.classType.UUID
 import de.jet.jvm.extension.container.removeAll
 import de.jet.jvm.tool.smart.identification.Identity
 import de.jet.jvm.tool.timing.calendar.Calendar
+import de.jet.paper.app.component.update.asset.UpdateState
 import de.jet.paper.extension.debugLog
 import de.jet.paper.runtime.event.PanelClickEvent
 import de.jet.paper.runtime.sandbox.SandBox
@@ -142,6 +143,9 @@ object JetCache : AppCache {
 	@DataLevel(CLEAR)
 	internal val panelInteractions = mutableMapOf<Identity<UI>, MutableMap<Int, MutableList<suspend PanelClickEvent.() -> Unit>>>()
 
+	@GlobalData
+	@DataLevel(DUMP)
+	internal val updateStates = mutableMapOf<Identity<out App>, UpdateState>()
 	private fun entityCleanerObjects(entity: UUID) = mapOf(
 		this::runningKeyboards to { runningKeyboards.removeAll { key, _ -> key.player == entity } },
 		this::buildModePlayers to { buildModePlayers.removeAll { it.identity == "" + entity } },
