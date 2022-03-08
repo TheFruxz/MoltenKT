@@ -48,6 +48,12 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.0-beta-1")
     implementation("io.ktor:ktor-serialization-kotlinx-xml:2.0.0-beta-1")
 
+    shadow("io.ktor:ktor-client-core:2.0.0-beta-1")
+    shadow("io.ktor:ktor-client-cio:2.0.0-beta-1")
+    shadow("io.ktor:ktor-client-content-negotiation:2.0.0-beta-1")
+    shadow("io.ktor:ktor-serialization-kotlinx-json:2.0.0-beta-1")
+    shadow("io.ktor:ktor-serialization-kotlinx-xml:2.0.0-beta-1")
+
     // External
 
     implementation("org.ktorm:ktorm-core:3.4.1") // KTorm
