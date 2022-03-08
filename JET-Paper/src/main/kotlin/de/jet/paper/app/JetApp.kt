@@ -3,7 +3,6 @@ package de.jet.paper.app
 import de.jet.jvm.extension.data.addJetJsonModuleModification
 import de.jet.jvm.extension.data.buildRandomTag
 import de.jet.jvm.extension.forceCast
-import de.jet.jvm.extension.tryToIgnore
 import de.jet.jvm.tool.smart.identification.Identity
 import de.jet.paper.app.component.buildMode.BuildModeComponent
 import de.jet.paper.app.component.chat.ChatComponent
@@ -56,18 +55,13 @@ import de.jet.paper.tool.input.Keyboard.RenderEngine.KeyConfiguration
 import de.jet.paper.tool.permission.Approval
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 import org.bukkit.Material
-import org.bukkit.command.CommandExecutor
 import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.entity.Player
 import java.util.logging.Level
@@ -275,12 +269,6 @@ class JetApp : App() {
 				}
 			}.display(executor as Player)
 		}
-
-	}
-
-	override fun bye() {
-
-
 
 	}
 	

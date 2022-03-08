@@ -3,10 +3,13 @@
 package de.jet.paper.structure.app
 
 import com.destroystokyo.paper.utils.PaperPluginLogger
-import de.jet.jvm.extension.*
+import de.jet.jvm.extension.catchException
 import de.jet.jvm.extension.container.mutableReplaceWith
 import de.jet.jvm.extension.data.fromJson
 import de.jet.jvm.extension.data.jsonBase
+import de.jet.jvm.extension.tryOrNull
+import de.jet.jvm.extension.tryToCatch
+import de.jet.jvm.extension.tryToIgnore
 import de.jet.jvm.tool.smart.identification.Identifiable
 import de.jet.jvm.tool.smart.identification.Identity
 import de.jet.jvm.tool.timing.calendar.Calendar
@@ -28,7 +31,13 @@ import de.jet.paper.structure.service.Service
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.bukkit.command.CommandExecutor
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.configuration.serialization.ConfigurationSerializable
@@ -538,7 +547,7 @@ abstract class App : JavaPlugin(), Identifiable<App> {
 		tryToCatch {
 			JetCache.registeredApplications.add(this)
 
-			tryOrNull { appConfigurationFile = getResourceText("jet-app.json").fromJson() } ?:
+			tryOrNull { appConfigurationFile = getResourceFile("jet-app.json")?.fromJson() } ?:
 				println("The jet-app.json of the app '${companion.predictedIdentity}' is not valid, or not found in resources!")
 
 			appConfigurationFile?.fileFormatRegex?.let {
