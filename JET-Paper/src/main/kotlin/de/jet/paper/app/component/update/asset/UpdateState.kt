@@ -7,7 +7,7 @@ import java.nio.file.Path
 data class UpdateState(
     val localVersion: String,
     val removeVersion: String,
-    val remoteFile: Url,
+    val remoteFile: Url?,
     val localFile: Path,
     val localConfiguration: AppConfigurationFile,
 )

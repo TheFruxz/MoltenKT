@@ -45,6 +45,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
+import java.io.File
 import java.io.InputStreamReader
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -483,6 +484,9 @@ abstract class App : JavaPlugin(), Identifiable<App> {
 			json(jsonBase)
 		}
 	}
+
+	val pluginFile: File
+		get() = file
 
 	var appConfigurationFile: AppConfigurationFile? = null
 		private set
