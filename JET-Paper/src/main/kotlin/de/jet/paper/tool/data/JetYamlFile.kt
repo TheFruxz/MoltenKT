@@ -12,6 +12,9 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.createFile
 import kotlin.io.path.div
 import kotlin.io.path.exists
+import kotlin.io.path.readText
+import kotlin.io.path.reader
+import kotlin.io.path.writeText
 
 interface JetYamlFile : JetFile {
 
@@ -28,15 +31,16 @@ interface JetYamlFile : JetFile {
 							createFile()
 					}
 
-				val noPath = file.toFile()
-				val yaml = YamlConfiguration.loadConfiguration(noPath)
+				val noPath = file
+				val reader = noPath.reader()
+				val yaml = YamlConfiguration.loadConfiguration(reader)
 
 				override fun load() {
-					yaml.load(noPath)
+					yaml.loadFromString(noPath.readText())
 				}
 
 				override fun save() {
-					yaml.save(noPath)
+					noPath.writeText(yaml.saveToString())
 				}
 
 				override fun contains(path: String) =

@@ -1,17 +1,16 @@
 package de.jet.paper.tool.data
 
 import de.jet.jvm.extension.forceCast
-import de.jet.jvm.extension.tryOrNull
 import de.jet.jvm.tool.smart.identification.Identifiable
 import de.jet.paper.app.JetCache
 import de.jet.paper.app.JetCache.registeredPreferenceCache
 import de.jet.paper.extension.debugLog
-import de.jet.paper.extension.tasky.async
-import de.jet.paper.extension.tasky.sync
-import de.jet.paper.extension.tasky.task
-import de.jet.paper.tool.timing.tasky.TemporalAdvice.Companion.instant
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.TimeUnit.SECONDS
+import de.jet.paper.extension.system
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -66,7 +65,7 @@ data class Preference<SHELL : Any>(
 	var content: SHELL
 		get() {
 			var out: SHELL
-			val process = process@{
+			val process = suspend process@{
 				val currentCacheValue = registeredPreferenceCache[inFilePath]
 
 				if (useCache && currentCacheValue != null) {
@@ -92,9 +91,10 @@ data class Preference<SHELL : Any>(
 					out = newContent.let {
 						if (useCache)
 							registeredPreferenceCache[inFilePath] = it
-						if (it == default)
+						if (it == default) {
 							file[inFilePath] = transformer.toCore(default)
-						file.save()
+							file.save() // TODO: 14.03.2022 Moved this statement from outside to inside - check if correct
+						}
 						it
 					}
 
@@ -103,28 +103,21 @@ data class Preference<SHELL : Any>(
 				return@process out
 			}
 
-			if (async || forceUseOfTasks) {
-				val future = CompletableFuture<SHELL>()
-
-				async { future.complete(process()) }
-
-				return tryOrNull { future.get(timeOut.inWholeSeconds, SECONDS) } ?: default.also {
-					debugLog("Preference access (async) failed for $identity with default $default")
-				}
-
-			} else {
-				val future = CompletableFuture<SHELL>()
-
-				sync { future.complete(process()) }
-
-				return tryOrNull { future.get(timeOut.inWholeSeconds, SECONDS) } ?: default.also {
-					debugLog("Preference access (sync) failed for $identity with default $default")
+			return runBlocking(Dispatchers.IO) {
+				withTimeoutOrNull(5.seconds) {
+					withContext(Dispatchers.IO) { process() }
+				} ?: default.also {
+					debugLog("Preference access (blocking) failed for $identity with default $default")
 				}
 			}
+
 		}
+
 		set(value) {
+			system.coroutineScope.launch(Dispatchers.IO) {
+
 			debugLog("Try to save in ($identity) the value: '$value'")
-			val process = {
+			val process = suspend {
 				if (readAndWrite) {
 					file.load()
 				}
@@ -140,12 +133,9 @@ data class Preference<SHELL : Any>(
 					file.save()
 			}
 
-			if (async || forceUseOfTasks) {
-				task(instant(async = async)) {
-					process()
-				}
-			} else
 				process()
+
+			}
 
 		}
 
