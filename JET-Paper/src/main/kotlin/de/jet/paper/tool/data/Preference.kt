@@ -104,7 +104,7 @@ data class Preference<SHELL : Any>(
 			}
 
 			return runBlocking(Dispatchers.IO) {
-				withTimeoutOrNull(5.seconds) {
+				withTimeoutOrNull(timeOut) {
 					withContext(Dispatchers.IO) { process() }
 				} ?: default.also {
 					debugLog("Preference access (blocking) failed for $identity with default $default")

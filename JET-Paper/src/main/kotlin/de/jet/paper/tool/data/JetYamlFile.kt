@@ -15,6 +15,7 @@ import kotlin.io.path.exists
 import kotlin.io.path.readText
 import kotlin.io.path.reader
 import kotlin.io.path.writeText
+import kotlin.io.path.writer
 
 interface JetYamlFile : JetFile {
 
@@ -35,31 +36,58 @@ interface JetYamlFile : JetFile {
 				val reader = noPath.reader()
 				val yaml = YamlConfiguration.loadConfiguration(reader)
 
+				var isLocked = false
+
 				override fun load() {
-					yaml.loadFromString(noPath.readText())
+					while (true) {
+						if (!isLocked) {
+							isLocked = true
+							yaml.loadFromString(noPath.readText())
+							isLocked = false
+						}
+					}
 				}
 
 				override fun save() {
-					noPath.writeText(yaml.saveToString())
+					while (true) {
+						if (!isLocked) {
+							isLocked = true
+							noPath.writeText(yaml.saveToString())
+							isLocked = false
+						}
+					}
 				}
 
 				override fun contains(path: String) =
 					yaml.contains(path)
 
 				override fun <T : Any?> set(path: String, value: T) {
-					yaml.set(path, value)
+					while (true) {
+						if (!isLocked) {
+							isLocked = true
+							yaml.set(path, value)
+							isLocked = false
+						}
+					}
 				}
 
 				@Suppress("UNCHECKED_CAST")
 				override fun <T> get(path: String): T? {
-					val get = yaml.get(path)
+					while (true) {
+						if (!isLocked) {
+							isLocked = true
 
-					return try {
-						get as T?
-					} catch (e: ClassCastException) {
-						null
+							val get = yaml.get(path)
+
+							return try {
+								isLocked = false
+								get as T?
+							} catch (e: ClassCastException) {
+								isLocked = false
+								null
+							}
+						}
 					}
-
 				}
 
 			}
