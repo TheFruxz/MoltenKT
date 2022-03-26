@@ -1,7 +1,6 @@
 package de.jet.paper.app
 
 import de.jet.jvm.extension.data.addJetJsonModuleModification
-import de.jet.jvm.extension.data.buildRandomTag
 import de.jet.jvm.extension.forceCast
 import de.jet.jvm.tool.smart.identification.Identity
 import de.jet.paper.app.component.buildMode.BuildModeComponent
@@ -26,11 +25,8 @@ import de.jet.paper.app.old_component.essentials.world.tree.WorldRenderer.Render
 import de.jet.paper.app.old_component.essentials.world.tree.WorldRenderer.WorldStructure
 import de.jet.paper.extension.debugLog
 import de.jet.paper.extension.display.ui.buildContainer
-import de.jet.paper.extension.display.ui.buildPanel
-import de.jet.paper.extension.display.ui.item
 import de.jet.paper.extension.mainLog
 import de.jet.paper.extension.objectBound.buildAndRegisterSandBox
-import de.jet.paper.extension.objectBound.buildSandBox
 import de.jet.paper.extension.paper.worlds
 import de.jet.paper.extension.tasky.sync
 import de.jet.paper.general.api.mojang.MojangProfile
@@ -53,6 +49,9 @@ import de.jet.paper.tool.input.Keyboard
 import de.jet.paper.tool.input.Keyboard.RenderEngine.Key
 import de.jet.paper.tool.input.Keyboard.RenderEngine.KeyConfiguration
 import de.jet.paper.tool.permission.Approval
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.runBlocking
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.delay
@@ -62,10 +61,10 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 import org.bukkit.Material
+import org.bukkit.command.CommandExecutor
 import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.entity.Player
 import java.util.logging.Level
-import kotlin.time.Duration.Companion.seconds
 
 class JetApp : App() {
 
@@ -185,22 +184,6 @@ class JetApp : App() {
 
 		add(JETInterchange())
 
-		buildSandBox(this, "testInventory") {
-			sync {
-				buildPanel {
-
-					placeInner(0, Material.STONE.item.putClickAction {
-						whoClicked.sendMessage("Hello, Mr. Clicky")
-					})
-
-					placeInner(1, Material.SADDLE.item.putClickAction {
-						isCancelled = true
-					})
-
-				}.display(executor as Player)
-			}
-		}
-
 		buildAndRegisterSandBox(this, "importAllWorlds") {
 			sync { worlds.map { it.name }.forEach(WorldRenderer.FileSystem::importWorld) }
 		}
@@ -218,56 +201,6 @@ class JetApp : App() {
 					}
 				}.display(executor as Player)
 			}
-		}
-
-		buildAndRegisterSandBox(this, "checkAsync") {
-
-			executor.sendMessage("This should be async, Thread: '${Thread.currentThread().name}'")
-
-			sync {
-				executor.sendMessage("This should be sync, Thread: '${Thread.currentThread().name}'")
-			}
-
-		}
-
-		buildAndRegisterSandBox(this, "simulateFreeze") {
-
-			executor.sendMessage("Okay, I'm going to freeze you now!")
-
-			delay(20000L)
-
-			executor.sendMessage("Okay, I'm going to unfreeze you now!")
-
-		}
-
-		buildAndRegisterSandBox(this, "simulateAutoStartManipulation") {
-
-			JetData.autoStartComponents.content.toMutableSet().add(buildRandomTag())
-
-		}
-
-		buildAndRegisterSandBox(this, "simulateAutoStartManipulation2") {
-
-			JetData.autoStartComponents.content = JetData.autoStartComponents.content.toMutableSet().apply {
-				add(buildRandomTag().also { println("adding $it") })
-			}.also { println("set to $it") }
-
-		}
-
-		buildAndRegisterSandBox(this, "clickAction") {
-			buildPanel {
-				this[20] = {
-
-					println("You clicked me!")
-
-					delay(2.seconds)
-
-					sync {
-						executor.sendMessage("You clicked me sync!")
-					}
-
-				}
-			}.display(executor as Player)
 		}
 
 	}

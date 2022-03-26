@@ -1,25 +1,52 @@
 package de.jet.paper.app.component.linking
 
+import de.jet.jvm.extension.container.firstOrNull
 import de.jet.paper.app.JetCache
-import de.jet.paper.extension.system
-import de.jet.paper.extension.tasky.async
 import de.jet.paper.runtime.event.PanelClickEvent
+import de.jet.paper.runtime.event.PanelCloseEvent
+import de.jet.paper.runtime.event.PanelOpenEvent
 import de.jet.paper.structure.app.event.EventListener
-import kotlinx.coroutines.launch
+import de.jet.paper.tool.display.ui.panel.PanelFlag.*
 import org.bukkit.event.EventHandler
 
 internal class PanelLinkListener : EventListener() {
 
 	@EventHandler
 	fun onPanelClick(event: PanelClickEvent) {
-		with(event) { async {
-			JetCache.panelInteractions.filter { it.key.identity == panel.identity }.forEach { (_, value) ->
-				value[event.clickedSlot]?.forEach { process ->
-					system.coroutineScope.launch { process(this@with) }
-				}
-			}
+		val panel = event.panel
+		val flags = panel.panelFlags
+
+		if (flags.contains(NO_GRAB) || (!flags.contains(NO_BORDER_PROTECTION) && (panel.isBorder(event.clickedSlot) || panel.isBorder(event.clickedItem)))) {
+			event.isCancelled = true
 		}
+
+		if (!flags.contains(NO_INTERACT)) {
+			JetCache.panelInteractions
+				.firstOrNull { it.key.identity == panel.identity }?.value
+				?.forEach { clickAction -> event.apply(clickAction) }
 		}
+
+	}
+
+	@EventHandler
+	fun onPanelOpen(event: PanelOpenEvent) {
+		val panel = event.panel
+
+		if (!panel.panelFlags.contains(NO_OPEN)) {
+			panel.onOpenEvent(event)
+		} else
+			event.isCancelled = true
+
+	}
+
+	@EventHandler
+	fun onPanelClose(event: PanelCloseEvent) {
+		val panel = event.panel
+
+		if (!panel.panelFlags.contains(NO_CLOSE)) {
+			event.panel.onCloseEvent(event)
+		} else
+			event.player.openInventory(event.inventory)
 	}
 
 }

@@ -3,6 +3,8 @@ package de.jet.jvm.extension.container
 import de.jet.jvm.extension.math.ceilToInt
 import de.jet.jvm.extension.math.maxTo
 import de.jet.jvm.tool.collection.PageValue
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * # `C.toArrayList()`
@@ -280,3 +282,45 @@ fun <T> Array<T>.hasDuplicates() =
  */
 fun <T, K> Array<T>.hasDuplicates(process: (T) -> K) =
 	size > distinctBy(process).size
+
+/**
+ * This function returns the average duration, out of the multiple duration
+ * provided by the [Collection].
+ * @return the average duration, determined by milliseconds
+ * @author Fruxz
+ * @since 1.0
+ */
+fun <C : Collection<Duration>> C.average(): Duration =
+	map(Duration::inWholeMilliseconds).sum().div(size).milliseconds
+
+/**
+ * This function returns the summary duration, out of the multiple duration
+ * provided by the [Collection].
+ * @return the summary duration, determined by milliseconds
+ * @author Fruxz
+ * @since 1.0
+ */
+fun <C : Collection<Duration>> C.sum(): Duration =
+	map(Duration::inWholeMilliseconds).sum().milliseconds
+
+/**
+ * This function returns the largest duration, out of the multiple durations
+ * provided by the [Collection].
+ * @return the largest duration, determined by milliseconds
+ * @author Fruxz
+ * @since 1.0
+ */
+fun <C : Collection<Duration>> C.max(): Duration =
+	map(Duration::inWholeMilliseconds).maxOf { it }.milliseconds
+
+/**
+ * This function returns the smallest duration, out of the multiple durations
+ * provided by the [Collection].
+ * @return the smallest duration, determined by milliseconds
+ * @author Fruxz
+ * @since 1.0
+ */
+fun <C : Collection<Duration>> C.min(): Duration =
+	map(Duration::inWholeMilliseconds).minOf { it }.milliseconds
+
+

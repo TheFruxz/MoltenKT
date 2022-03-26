@@ -28,6 +28,7 @@ import de.jet.paper.structure.app.update.AppConfigurationFile
 import de.jet.paper.structure.command.Interchange
 import de.jet.paper.structure.component.Component
 import de.jet.paper.structure.service.Service
+import de.jet.paper.tool.data.JetYamlFile
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.serialization.kotlinx.json.*
@@ -47,6 +48,7 @@ import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 import java.io.InputStreamReader
+import java.nio.file.Path
 import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.reflect.KClass
@@ -265,7 +267,9 @@ abstract class App : JavaPlugin(), Identifiable<App> {
 	fun unregister(service: Service) {
 		if (JetCache.registeredServices.any { it.identity == service.identity }) {
 			tryToCatch {
-				stop(service)
+				if (service.isRunning) {
+					stop(service)
+				}
 				JetCache.registeredServices.remove(service)
 				mainLog(Level.INFO, "Unregister of service '${service.identity}' succeed!")
 			}
@@ -331,11 +335,12 @@ abstract class App : JavaPlugin(), Identifiable<App> {
 	}
 
 	fun remove(eventListener: EventListener) {
-		if (isEnabled) {
+		if (isEnabled && eventListener.isVendorCurrentlySet) {
 
 			try {
 
 				HandlerList.unregisterAll(eventListener)
+				JetCache.registeredListeners.removeAll { it.listenerIdentity == eventListener.listenerIdentity }
 				mainLog(Level.INFO, "unregistered '${eventListener.listenerIdentity}' listener!")
 
 			} catch (e: Exception) {
@@ -346,7 +351,7 @@ abstract class App : JavaPlugin(), Identifiable<App> {
 			}
 
 		} else
-			mainLog(Level.WARNING, "skipped unregistering '${eventListener.listenerIdentity}' listener, app disabled!")
+			mainLog(Level.WARNING, "skipped unregistering '${eventListener.listenerIdentity}' listener, app disabled or vendor unreachable!")
 	}
 
 	fun add(component: Component) {
@@ -410,28 +415,33 @@ abstract class App : JavaPlugin(), Identifiable<App> {
 
 		if (component != null) {
 
-			if (component.canBeStopped) {
+			if (isEnabled && component.isVendorCurrentlySet) {
 
-				if (JetCache.runningComponents.contains(componentIdentity)) {
+				if (component.canBeStopped) {
 
-					coroutineScope.launch(context = component.threadContext) {
+					if (JetCache.runningComponents.contains(componentIdentity)) {
 
-						component.stop()
+						coroutineScope.launch(context = component.threadContext) {
 
-						JetCache.runningComponents.remove(componentIdentity)
+							component.stop()
 
-						if (unregisterComponent)
-							unregister(componentIdentity)
+							JetCache.runningComponents.remove(componentIdentity)
 
-						mainLog(Level.INFO, "stopped '${component.identity}' component!")
+							if (unregisterComponent)
+								unregister(componentIdentity)
 
-					}
+							mainLog(Level.INFO, "stopped '${component.identity}' component!")
+
+						}
+
+					} else
+						throw IllegalStateException("The component '$componentIdentity' is already not running!")
 
 				} else
-					throw IllegalStateException("The component '$componentIdentity' is already not running!")
+					throw IllegalActionException("The component '$componentIdentity' can't be stopped, due to its behavior '${component.behaviour}'!")
 
 			} else
-				throw IllegalActionException("The component '$componentIdentity' can't be stopped, due to its behavior '${component.behaviour}'!")
+				mainLog(Level.WARNING, "skipped stopping '${component.identity}' component, app disabled or vendor unreachable!")
 
 		} else
 			throw NoSuchElementException("The component '$componentIdentity' is currently not registered! ADD IT!")
@@ -444,7 +454,10 @@ abstract class App : JavaPlugin(), Identifiable<App> {
 
 			if (component != null) {
 
-				JetCache.registeredComponents.remove(component)
+				if (component.isVendorCurrentlySet) {
+					JetCache.registeredComponents.remove(component)
+				} else
+					mainLog(Level.WARNING, "skipped unregistering '${component.identity}' component, app disabled or vendor unreachable!")
 
 			} else
 				throw NoSuchElementException("The component '$componentIdentity' is already not registered!")
@@ -499,6 +512,9 @@ abstract class App : JavaPlugin(), Identifiable<App> {
 	val languageSpeaker by lazy { LanguageSpeaker(/*JetData.systemLanguage.content*/"en_general") }
 
 	private val pluginManager = server.pluginManager
+
+	val appFolder: Path
+		get() = JetYamlFile.appPath(this)
 
 	// override base-mechanics
 
