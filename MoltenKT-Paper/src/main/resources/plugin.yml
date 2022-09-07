@@ -11,3 +11,7 @@ softdepend:
   - PlaceholderAPI
 prefix: ${name}
 website: ${website}
+loadbefore:
+  - SimpleCloud-Plugin
+depend:
+  - Kotlin
