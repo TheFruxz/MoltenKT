@@ -126,3 +126,4 @@ The MoltenKT-Paper-Runnable jar includes (/ shadowed) these small amount of depe
 ###### We build & use MoltenKT on Java 17 - [Eclipse Temurin](https://adoptium.net/).
 ###### Also build & run MoltenKT with [Eclipse Temurin](https://adoptium.net/) to get the best possible experience!
 ###### Different modules getting split to different repositories and may receive each its own brand in future
+###### The movement to Ascend, Sparkle and Stacked has begun!
