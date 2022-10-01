@@ -1,10 +1,6 @@
-# ![MoltenKT](https://user-images.githubusercontent.com/28064149/174038731-aea205d3-e7aa-4c69-8ae2-f2016ece3653.png)
-#### MoltenKT is now split to Ascend, Stacked & Sparkle and this repository is now archived and out of support!
+# ![MoltenKT Moved](https://user-images.githubusercontent.com/28064149/193405934-bdc9e314-452a-4d1e-9924-d8f803df75d1.jpg)
 
-[![JitPack](https://jitpack.io/v/TheFruxz/MoltenKT.svg?style=flat-square)](https://jitpack.io/#TheFruxz/MoltenKT)
-[![MoltenKT-Build](https://github.com/TheFruxz/MoltenKT/actions/workflows/build-MoltenKT.yml/badge.svg)](https://github.com/TheFruxz/MoltenKT/actions/workflows/build-MoltenKT.yml)
-[![MoltenKT-Test](https://github.com/TheFruxz/MoltenKT/actions/workflows/test-MoltenKT.yml/badge.svg)](https://github.com/TheFruxz/MoltenKT/actions/workflows/test-MoltenKT.yml)
-[![MoltenKT-Publish](https://github.com/TheFruxz/MoltenKT/actions/workflows/publish-MoltenKT.yml/badge.svg)](https://github.com/TheFruxz/MoltenKT/actions/workflows/publish-MoltenKT.yml)
+#### MoltenKT is now split to Ascend, Stacked & Sparkle and this repository is now archived and out of support!
 
 [![Open Source](https://forthebadge.com/images/badges/open-source.svg)](https://github.com/TheFruxz/MoltenKT/blob/main/LICENSE)
 [![Built by developers](https://forthebadge.com/images/badges/built-by-developers.svg)](https://github.com/TheFruxz/MoltenKT/graphs/contributors)
