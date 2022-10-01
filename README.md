@@ -1,5 +1,5 @@
 # ![MoltenKT](https://user-images.githubusercontent.com/28064149/174038731-aea205d3-e7aa-4c69-8ae2-f2016ece3653.png)
-#### MoltenKT is now split to Ascend, Stacked & Sparkle
+#### MoltenKT is now split to Ascend, Stacked & Sparkle and this repository is now archived and out of support!
 
 [![JitPack](https://jitpack.io/v/TheFruxz/MoltenKT.svg?style=flat-square)](https://jitpack.io/#TheFruxz/MoltenKT)
 [![MoltenKT-Build](https://github.com/TheFruxz/MoltenKT/actions/workflows/build-MoltenKT.yml/badge.svg)](https://github.com/TheFruxz/MoltenKT/actions/workflows/build-MoltenKT.yml)
