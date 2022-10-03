@@ -1,6 +1,6 @@
 # ![MoltenKT Moved](https://user-images.githubusercontent.com/28064149/193405934-bdc9e314-452a-4d1e-9924-d8f803df75d1.jpg)
 
-#### MoltenKT is now split to Ascend, Stacked & Sparkle and this repository is now archived and out of support!
+## MoltenKT is now split to [Ascend](https://github.com/TheFruxz/Ascend), [Stacked](https://github.com/TheFruxz/Stacked) & [Sparkle](https://github.com/TheFruxz/Sparkle) and this repository is now archived and out of support!
 
 [![Open Source](https://forthebadge.com/images/badges/open-source.svg)](https://github.com/TheFruxz/MoltenKT/blob/main/LICENSE)
 [![Built by developers](https://forthebadge.com/images/badges/built-by-developers.svg)](https://github.com/TheFruxz/MoltenKT/graphs/contributors)
